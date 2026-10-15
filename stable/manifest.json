@@ -6,7 +6,7 @@
   "versionName": "0.4.0"
  },
  "files": {
-  "app.js": "9f57c30424cb1d85418334726f60058e224d06de11b4b70aa2a542a3448b37c7",
+  "app.js": "e956889153ad7d6a1e8a9ff450c6b3518c993f3220563b540199642d43a0cdbb",
   "backup.js": "7ae8683f4eb01fec7db2b036208c06d85e135a2cf76c28a8c78d933d8381c996",
   "core.js": "33da9657b3745dbb6663152e2108e24e065889f97ca22b6b7999811aba78203b",
   "fonts/IBMPlexSansKR-Bold.ttf": "9d82a8be5330f6d7b53121262867b402baca672eb69b852928f06d185d357f7d",
@@ -20,6 +20,6 @@
  },
  "minShell": 1,
  "package": "local.personal.assistantb",
- "publishedAt": 1792051912,
- "webVersion": 1792051856
+ "publishedAt": 1792051983,
+ "webVersion": 1792051980
 }
