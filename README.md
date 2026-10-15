@@ -4,7 +4,7 @@
 
 ## 1. 설치하기 (안드로이드 13 이상)
 1. 휴대폰·태블릿에서 아래 링크를 눌러 설치 파일을 받으세요.
-   **[내 비서 0.4.0 설치 파일 받기](https://github.com/hellotwizi-pixel/personal-assistant-updates/releases/download/v0.4.0/personal-assistant-0.4.0.apk)**
+   **[내 비서 0.4.1 설치 파일 받기](https://github.com/hellotwizi-pixel/personal-assistant-updates/releases/download/v0.4.1/personal-assistant-0.4.1.apk)**
 2. 받은 파일을 열고 **설치**를 누르세요.
    "출처를 알 수 없는 앱" 화면이 뜨면 → 그 화면의 **설정** → **이 출처 허용**을 켜고 뒤로 돌아와 설치하세요.
 
