@@ -6,9 +6,9 @@
   "versionName": "0.4.1"
  },
  "files": {
-  "app.js": "1b59657c1227e5f2b5df73139ce277ab6dbd1f9335d36e88b6551e6f1bef8ddc",
+  "app.js": "22667b676a56a63d3e5a3427de53386ac9cb5516f0bd927e1c5ad6bfd63759c0",
   "backup.js": "7ae8683f4eb01fec7db2b036208c06d85e135a2cf76c28a8c78d933d8381c996",
-  "core.js": "3a955b346a42063ba2901fbc557284bad61495c2f209b547ef58bb2bd4ccb885",
+  "core.js": "ac62cc5e776b66b11125fe3e30b499ef871e8c694cc9b993515a57eb3be26cb3",
   "fonts/IBMPlexSansKR-Bold.ttf": "9d82a8be5330f6d7b53121262867b402baca672eb69b852928f06d185d357f7d",
   "fonts/IBMPlexSansKR-Regular.ttf": "53750379270312368cf7641901f43a98dd892e3d9d5798cf25cdc245c85c71c0",
   "fonts/IBMPlexSansKR-SemiBold.ttf": "823c1956adf56c27c06b062725dfce23f266e4fd1366290f2957c8407482a817",
@@ -20,6 +20,6 @@
  },
  "minShell": 1,
  "package": "local.personal.assistantb",
- "publishedAt": 1792371225,
- "webVersion": 1792371219
+ "publishedAt": 1792371578,
+ "webVersion": 1792371575
 }

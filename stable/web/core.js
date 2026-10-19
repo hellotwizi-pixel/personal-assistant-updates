@@ -189,6 +189,11 @@
       words.forEach(w=>{if(p.name===name){next[w]=Math.min(20,(next[w]||0)+1);changed=true;}else if(next[w]){next[w]-=1;if(next[w]<=0)delete next[w];changed=true;}});
       if(!changed)return;const kept=Object.entries(next).sort((a,b)=>b[1]-a[1]).slice(0,200);write(state,'project',p.id,{learned:Object.fromEntries(kept),updatedAt:ms},ms);});
   }
+  /** Records still waiting in 확인함 for a folder get another try whenever the rules or words improve. Never overrides a folder already chosen. */
+  function refileUnsorted(state,ms=Date.now()){const names=projectNames(state),hints=projectHints(state),moved=[];
+    Object.values(state.items).filter(x=>!x.deleted&&!x.project&&(x.needsReview||[]).includes('project')).forEach(x=>{const p=classify(x.body||x.title||'',names,hints);if(!p)return;
+      write(state,'item',x.id,{project:p,needsReview:x.needsReview.filter(k=>k!=='project'),hobby:x.type==='note'&&p==='취미'?x.hobby||hobbyType(x.body||x.title||''):x.hobby||null,updatedAt:ms},ms);moved.push(x.id);});
+    return moved;}
   function setProjectKeywords(state,id,text,ms=Date.now()){ensureProjects(state,ms);const p=state.projects[id];if(!p||p.deleted)throw new Error('폴더를 찾지 못했어요.');
     const list=[...new Set(String(text||'').split(/[,，\n]/).map(x=>x.replace(/\s+/g,' ').trim()).filter(x=>x.length>=2&&x.length<=30))].slice(0,50);
     write(state,'project',id,{keywords:list,updatedAt:ms},ms);return list;}
@@ -436,5 +441,5 @@
       for(const [id,v] of Object.entries(other[bucket]||{})){if(!state[bucket][id])write(state,entity,id,v,ms);else if(!same(state[bucket][id],v))state.conflicts.push({opId:uuid(),operation:{entity,id,patch:v},current:clone(state[bucket][id]),fields:['backup'],reason:'백업과 현재 기록이 다릅니다.'});}
     }return state;
   }
-  return {VERSION,PROJECTS,STARTER_PROJECTS,adoptOwnerProjects,PROJECT_ICONS,projectList,projectNames,projectHints,learnProject,setProjectKeywords,forgetLearned,topicWords,ensureProjects,addProject,renameProject,setProjectIcon,deleteProject,TYPES,DAY,MINUTE,uuid,clone,same,zoneParts,validDate,addDays,weekday,monthDays,localEpoch,finalAlarm,dateParse,recurrenceParse,classify,parseCreate,titleOf,emptyState,write,createItem,execute,query,updateItem,complete,toggleChild,addChildren,postpone,ensureRecurrences,resolveRecurrence,changeSeries,activeItems,todayView,noonItems,schedulePlan,dailyNotice,acknowledge,notificationId,formatTime,applySync,resolveConflict,mergeBackup,matchItems};
+  return {VERSION,PROJECTS,STARTER_PROJECTS,adoptOwnerProjects,PROJECT_ICONS,projectList,projectNames,projectHints,learnProject,setProjectKeywords,forgetLearned,refileUnsorted,topicWords,ensureProjects,addProject,renameProject,setProjectIcon,deleteProject,TYPES,DAY,MINUTE,uuid,clone,same,zoneParts,validDate,addDays,weekday,monthDays,localEpoch,finalAlarm,dateParse,recurrenceParse,classify,parseCreate,titleOf,emptyState,write,createItem,execute,query,updateItem,complete,toggleChild,addChildren,postpone,ensureRecurrences,resolveRecurrence,changeSeries,activeItems,todayView,noonItems,schedulePlan,dailyNotice,acknowledge,notificationId,formatTime,applySync,resolveConflict,mergeBackup,matchItems};
 });
