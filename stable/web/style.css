@@ -203,3 +203,22 @@ body{background:radial-gradient(ellipse at 0% 0%,rgba(147,169,244,.65),transpare
 .card.cal-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity;overscroll-behavior-x:contain}
 .cal-scroll .calendar-grid{width:300%;grid-template-columns:repeat(7,minmax(0,1fr))}
 .cal-scroll .calendar-day,.cal-scroll .calendar-dayhead{scroll-snap-align:start}
+/* 2026-10-19 (owner): top-right row 확인함 · 알림 · 설정; two equal Mimirs — blue briefing left, green spoken search right. */
+.top-actions{display:flex;gap:8px;align-items:center}
+.top-actions .icon-btn{position:relative}
+.top-actions .hub-badge{top:-6px;right:-6px;min-width:18px;height:18px;font-size:10px}
+.hub{height:auto;max-width:420px;margin:4px auto 18px;display:grid;justify-items:center;gap:30px}
+.hub-pair{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;justify-items:center}
+.hub-orb,.hub-orb.green{position:relative;left:auto;top:auto;margin:0;width:150px;height:150px}
+.hub-orb.green .orb-label{color:#14915a}
+.hub-orb.green .orb{filter:hue-rotate(-75deg)}
+.hub-attach{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:999px;font-size:12px;color:var(--muted)}
+.hub-attach svg{width:16px;height:16px}
+@media(max-width:365px){.hub{height:auto}.hub-orb,.hub-orb.green{width:126px;height:126px;margin:0}.hub-orb .orb-label{margin-top:0}}
+.record-orb.green{background:linear-gradient(135deg,#2bc27e,#13995c)}
+.ask-answer{padding:16px 18px;margin-bottom:12px}
+.ask-answer .ask-q{font-size:12px;color:var(--muted);margin-bottom:6px}
+.ask-answer p{margin:0;font-size:16px;font-weight:600;line-height:1.5}
+#ask-form{display:flex;align-items:center;gap:8px}
+#ask-form input{flex:1;min-width:0}
+#ask-form .link-btn{flex:none;padding:6px}

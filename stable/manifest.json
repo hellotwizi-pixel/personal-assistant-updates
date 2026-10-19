@@ -1,25 +1,25 @@
 {
  "apk": {
-  "sha256": "e9ad65032e06db7f418663a3b38011de816b380ef72201153dd8e3f9e2c6cd5d",
-  "url": "https://github.com/hellotwizi-pixel/personal-assistant-updates/releases/download/v0.4.5/personal-assistant-0.4.5.apk",
-  "versionCode": 18,
-  "versionName": "0.4.5"
+  "sha256": "ca973c8a51bc048a9a777251d3cc538b928ec28fa0eef4b5583cf86ea3a8e260",
+  "url": "https://github.com/hellotwizi-pixel/personal-assistant-updates/releases/download/v0.5.0/personal-assistant-0.5.0.apk",
+  "versionCode": 19,
+  "versionName": "0.5.0"
  },
  "files": {
-  "app.js": "50c7f298c20e493e5344bdd4be0a7a3a3b345c636f0fb96191be9fcbdc71bea5",
+  "app.js": "fc29be0e609404c6a4257c661bd41327060e75f9c0a190c8580599d878691d44",
   "backup.js": "7ae8683f4eb01fec7db2b036208c06d85e135a2cf76c28a8c78d933d8381c996",
-  "core.js": "72aaccd82991f35642a49136e4f00ab2051514d110c8b54a592fc0510bafbcf2",
+  "core.js": "f9a4bc848beb6ffefad4ff1dce833533ad91e5355632363546e69509e3f11891",
   "fonts/IBMPlexSansKR-Bold.ttf": "9d82a8be5330f6d7b53121262867b402baca672eb69b852928f06d185d357f7d",
   "fonts/IBMPlexSansKR-Regular.ttf": "53750379270312368cf7641901f43a98dd892e3d9d5798cf25cdc245c85c71c0",
   "fonts/IBMPlexSansKR-SemiBold.ttf": "823c1956adf56c27c06b062725dfce23f266e4fd1366290f2957c8407482a817",
   "icon.svg": "5f07fff574f3f8329605b15bb89920b7f45360a6204ac46dfa2d5968a36326f2",
   "index.html": "2be6d5c88de6f5c440c4791b68d6ae1c9009e10b58a0e5ab658422c6d3df770e",
   "manifest.webmanifest": "5198ab475c67347a5d0b96f5eacad82f43abacdfc2613f1d0f3ea345af9ecbdd",
-  "orb.js": "5e290495b40b65d0280157120de36347a716d2cd345d5ee3cc04011923ffba69",
-  "style.css": "aba4841508e55243e18bc9d047fdefb65e23d9a234320be21da9eda1c1ef1853"
+  "orb.js": "3f01f0b9130f9fa712229754eeb0b72351e60f5047d407b6394c26495656eed4",
+  "style.css": "ca373d88de02d9d6bca4b261c57e62f981d524f045b120f14ce14932b94833bf"
  },
  "minShell": 1,
  "package": "local.personal.assistantb",
- "publishedAt": 1792385666,
- "webVersion": 1792385657
+ "publishedAt": 1792389698,
+ "webVersion": 1792389688
 }

@@ -11,7 +11,7 @@
 ## 1. 설치하기
 
 1. 휴대폰에서 아래 링크를 누르세요.
-   **[내 비서 0.4.5 설치 파일 받기](https://github.com/hellotwizi-pixel/personal-assistant-updates/releases/download/v0.4.5/personal-assistant-0.4.5.apk)**
+   **[내 비서 0.5.0 설치 파일 받기](https://github.com/hellotwizi-pixel/personal-assistant-updates/releases/download/v0.5.0/personal-assistant-0.5.0.apk)**
 2. 브라우저가 "이 파일을 다운로드할까요?"라고 물으면 **다운로드**를 누르세요.
    (크롬은 "유해할 수 있는 파일" 경고가 뜰 수 있어요 → **다운로드**)
 3. 다운로드가 끝나면 알림이나 화면 아래의 **열기**를 누르세요.

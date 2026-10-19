@@ -4,7 +4,7 @@
   else root.AssistantCore = factory();
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
-  const VERSION = '0.4.5';
+  const VERSION = '0.5.0';
   const PROJECTS = ['개인일정', '취미', 'DMmate', '하하팩토리', '캐나다 골프사업', '디토크', '바베큐국립공원', 'AI Office'];
   // Owner-editable folders (2026-10-14). Until the first edit the eight defaults apply unchanged.
   const PROJECT_ICONS = ['calendar','book','spark','folder','report','home','archive','bell','image','clock'];
@@ -348,6 +348,42 @@
     all.sort((a,b)=>String(a.plannedDate||a.dueDate||a.date||'9999').localeCompare(String(b.plannedDate||b.dueDate||b.date||'9999')));
     const ids=all.slice(0,30).map(x=>x.id);return {status:'answer',message:(all.length?`${all.length}개 기록을 찾았어요.\n`+all.slice(0,8).map(x=>'• '+x.title+(x.plannedDate||x.dueDate||x.date?' · '+(x.plannedDate||x.dueDate||x.date):'')).join('\n'):'조건에 맞는 기록이 없어요.')+extra,ids};
   }
+  // Spoken search (green orb, owner 2026-10-19): "책 저장한 것만 보여줘", "결혼식 몇 시였지?". Reads only; never creates records.
+  const ASK_DROP=new Set(['다','좀','것','거','만','전부','모두','모아서','모아','기록','기록들','내용','일정','약속','할일','할','일','메모','목록','리스트','관련','어떤','무슨','뭐','뭐야','있어','있나','있었나','그거','그','저','내가','제가','줘','주세요']);
+  const ASK_VERB=/^(?:보여|알려|찾아|검색|모아|정리해|저장(?:한|했|된|해)|기록(?:한|했|된|해)|등록(?:한|했|된|해)|넣(?:은|었)|적(?:은|었)|말(?:한|했)|언제|몇|며칠|어디|무슨|뭐(?:였|였지|지)|있었|였|이었|했었|했던|하던|한거|한것)/;
+  const SPELL={'DMmate':['dmmate','디엠메이트','dm메이트'],'하하팩토리':['하하팩토리'],'캐나다 골프사업':['캐나다골프','에이스골프','올댓골프'],'디토크':['디토크','dtalk'],'바베큐국립공원':['바베큐국립공원','바비큐국립공원'],'AI Office':['aioffice','ai오피스','에이아이오피스']};
+  const CATS=[['책',/책|독서/,x=>x.hobby==='책'||/책|독서/.test(x.title+' '+x.body)],['영화',/영화/,x=>x.hobby==='영화'||/영화/.test(x.title+' '+x.body)],['음악',/음악|노래|앨범|가수/,x=>x.hobby==='음악'||/음악|노래|앨범|가수/.test(x.title+' '+x.body)]];
+  function whenText(x,zone){if(x.startAt)return formatTime(x.startAt,zone);const d=x.date||x.plannedDate||x.dueDate;if(!d)return '';const [y,m,dd]=d.split('-').map(Number);return `${m}월 ${dd}일(${'일월화수목금토'[weekday(d)]})`+(x.type==='task'&&/까지/.test(x.body||'')?' 마감':'');}
+  function ask(state,text,ms=Date.now()){
+    text=String(text||'').trim();const zone=state.settings.timezone;if(!text)return {status:'error',message:'무엇을 찾을지 말씀해 주세요.',ids:[]};
+    const t=flat(text),names=projectNames(state),labels=[];
+    let all=Object.values(state.items).filter(x=>!x.deleted);
+    const project=names.find(p=>t.includes(flat(p)))||names.find(p=>(SPELL[p]||[]).some(a=>t.includes(a)));
+    if(project){all=all.filter(x=>x.project===project);labels.push(project);}
+    const cat=CATS.find(c=>c[1].test(text));if(cat){all=all.filter(c=>cat[2](c));labels.push(cat[0]);}
+    if(/할\s*일|해야/.test(text)){all=all.filter(x=>x.type==='task');labels.push('할 일');}
+    if(/완료|끝낸|끝난|마친/.test(text)){all=all.filter(x=>x.type==='task'&&x.done);labels.push('완료');}
+    if(/오늘|내일|모레|이번\s*주|다음\s*주|지난\s*주|요일|\d+\s*월\s*\d+\s*일/.test(text)){
+      const today=zoneParts(ms,zone).date,dateOf=x=>x.date||x.plannedDate||x.dueDate;let from=null,to=null;
+      if(/(?:이번|다음|지난)\s*주/.test(text)&&!/요일/.test(text)){const shift=/다음\s*주/.test(text)?7:/지난\s*주/.test(text)?-7:0;from=addDays(today,-((weekday(today)+6)%7)+shift);to=addDays(from,6);}
+      else{const dt=dateParse(text,ms,zone);if(dt.date){from=dt.date;to=dt.endDate||dt.date;}}
+      if(from){all=all.filter(x=>{const d=dateOf(x),e=x.endDate||d;return d&&d<=to&&e>=from;});labels.push(from===to?from.slice(5).replace('-','/'):`${from.slice(5).replace('-','/')}~${to.slice(5).replace('-','/')}`);}
+    }
+    const skip=new Set([...(project?[flat(project),...(SPELL[project]||[])]:[]),...(cat?[cat[0],'독서','노래','음악','앨범','가수','영화']:[])]);
+    const words=topicWords(text).filter(w=>!ASK_DROP.has(w)&&!ASK_VERB.test(w)&&!skip.has(flat(w))&&!/^(?:오늘|내일|모레|이번|다음|지난|주|(?:이번|다음|지난)주|요일|[월화수목금토일]요일|\d+월|\d+일|완료|끝낸|끝난|약속|일정|할일)$/.test(w));
+    if(words.length){const hay=x=>flat([x.title,x.body,x.project,...(x.children||[]).map(c=>c.title)].join(' '));
+      const scored=all.map(x=>{const h=hay(x);return [x,words.filter(w=>h.includes(flat(w))).length];}).filter(([,n])=>n>0);
+      const best=Math.max(0,...scored.map(([,n])=>n));all=scored.filter(([,n])=>n===best).map(([x])=>x);labels.push(...words);}
+    else if(!labels.length)return {status:'answer',message:'무엇을 찾을지 조금 더 말씀해 주세요. 예: “책 저장한 것만 보여줘”, “결혼식 몇 시였지?”',ids:[],labels:[]};
+    const dateOf=x=>x.startAt||Date.parse((x.date||x.plannedDate||x.dueDate||'')+'T12:00:00Z')||0;
+    const timeAsk=/몇\s*시|언제|며칠|무슨\s*요일|날짜/.test(text);
+    all.sort((a,b)=>{if(timeAsk&&!a.startAt!==!b.startAt)return a.startAt?-1:1;const da=dateOf(a),db=dateOf(b);if(!da!==!db)return da?-1:1;return Math.abs(da-ms)-Math.abs(db-ms)||(b.createdAt||0)-(a.createdAt||0);});
+    const ids=all.slice(0,50).map(x=>x.id);
+    if(!all.length)return {status:'answer',message:`“${labels.join(' · ')}”에 맞는 기록을 찾지 못했어요.`,ids,labels};
+    if(timeAsk){const top=all[0],w=whenText(top,zone);
+      return {status:'answer',message:w?`${top.title}: ${w}${all.length>1?`\n비슷한 기록이 ${all.length-1}개 더 있어요.`:''}`:`${top.title}에는 날짜가 적혀 있지 않아요.`,ids,labels,spoken:w?`${top.title}, ${w}이에요.`:`${top.title}에는 날짜가 없어요.`};}
+    return {status:'answer',message:`${labels.join(' · ')} 기록 ${all.length}개를 찾았어요.`,ids,labels};
+  }
   function execute(state,text,ms=Date.now(),zone=state.settings.timezone,captureId=uuid()) {
     text=String(text||'').trim();if(!text)return {status:'error',message:'기록할 내용을 입력해주세요.'};if(text.length>20000)return {status:'error',message:'한 번에 20,000자까지 저장할 수 있어요.'};
     let m;
@@ -441,5 +477,5 @@
       for(const [id,v] of Object.entries(other[bucket]||{})){if(!state[bucket][id])write(state,entity,id,v,ms);else if(!same(state[bucket][id],v))state.conflicts.push({opId:uuid(),operation:{entity,id,patch:v},current:clone(state[bucket][id]),fields:['backup'],reason:'백업과 현재 기록이 다릅니다.'});}
     }return state;
   }
-  return {VERSION,PROJECTS,STARTER_PROJECTS,adoptOwnerProjects,PROJECT_ICONS,projectList,projectNames,projectHints,learnProject,setProjectKeywords,forgetLearned,refileUnsorted,topicWords,ensureProjects,addProject,renameProject,setProjectIcon,deleteProject,TYPES,DAY,MINUTE,uuid,clone,same,zoneParts,validDate,addDays,weekday,monthDays,localEpoch,finalAlarm,dateParse,recurrenceParse,classify,parseCreate,titleOf,emptyState,write,createItem,execute,query,updateItem,complete,toggleChild,addChildren,postpone,ensureRecurrences,resolveRecurrence,changeSeries,activeItems,todayView,noonItems,schedulePlan,dailyNotice,acknowledge,notificationId,formatTime,applySync,resolveConflict,mergeBackup,matchItems};
+  return {VERSION,PROJECTS,STARTER_PROJECTS,adoptOwnerProjects,PROJECT_ICONS,projectList,projectNames,projectHints,learnProject,setProjectKeywords,forgetLearned,refileUnsorted,topicWords,ensureProjects,addProject,renameProject,setProjectIcon,deleteProject,TYPES,DAY,MINUTE,uuid,clone,same,zoneParts,validDate,addDays,weekday,monthDays,localEpoch,finalAlarm,dateParse,recurrenceParse,classify,ask,parseCreate,titleOf,emptyState,write,createItem,execute,query,updateItem,complete,toggleChild,addChildren,postpone,ensureRecurrences,resolveRecurrence,changeSeries,activeItems,todayView,noonItems,schedulePlan,dailyNotice,acknowledge,notificationId,formatTime,applySync,resolveConflict,mergeBackup,matchItems};
 });
