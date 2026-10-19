@@ -1,14 +1,14 @@
 {
  "apk": {
-  "sha256": "64374702620e5403b20ab04c5fc0c70d1f0144bf90e68aa8b49ceafc5278721b",
-  "url": "https://github.com/hellotwizi-pixel/personal-assistant-updates/releases/download/v0.4.4/personal-assistant-0.4.4.apk",
-  "versionCode": 17,
-  "versionName": "0.4.4"
+  "sha256": "e9ad65032e06db7f418663a3b38011de816b380ef72201153dd8e3f9e2c6cd5d",
+  "url": "https://github.com/hellotwizi-pixel/personal-assistant-updates/releases/download/v0.4.5/personal-assistant-0.4.5.apk",
+  "versionCode": 18,
+  "versionName": "0.4.5"
  },
  "files": {
   "app.js": "50c7f298c20e493e5344bdd4be0a7a3a3b345c636f0fb96191be9fcbdc71bea5",
   "backup.js": "7ae8683f4eb01fec7db2b036208c06d85e135a2cf76c28a8c78d933d8381c996",
-  "core.js": "02e75394a84128f711e7af441da668d74cac2726a7cd81bc669e6008c751828d",
+  "core.js": "72aaccd82991f35642a49136e4f00ab2051514d110c8b54a592fc0510bafbcf2",
   "fonts/IBMPlexSansKR-Bold.ttf": "9d82a8be5330f6d7b53121262867b402baca672eb69b852928f06d185d357f7d",
   "fonts/IBMPlexSansKR-Regular.ttf": "53750379270312368cf7641901f43a98dd892e3d9d5798cf25cdc245c85c71c0",
   "fonts/IBMPlexSansKR-SemiBold.ttf": "823c1956adf56c27c06b062725dfce23f266e4fd1366290f2957c8407482a817",
@@ -20,6 +20,6 @@
  },
  "minShell": 1,
  "package": "local.personal.assistantb",
- "publishedAt": 1792372907,
- "webVersion": 1792372899
+ "publishedAt": 1792385666,
+ "webVersion": 1792385657
 }
