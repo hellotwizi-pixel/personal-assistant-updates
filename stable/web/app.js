@@ -29,7 +29,7 @@ function nav(tab,label,i){return `<button class="nav-item ${view.tab===tab?'acti
 // Sync state as the owner needs it: a stale or failing sync is never shown as plainly "connected".
 function lastSyncText(){if(!state.lastSync)return '기록 없음';const d=new Date(state.lastSync),p=n=>String(n).padStart(2,'0'),t=p(d.getHours())+':'+p(d.getMinutes());return new Date().toDateString()===d.toDateString()?t:(d.getMonth()+1)+'/'+d.getDate()+' '+t;}
 function syncStale(){return connection.connected&&(!!view.syncError||!state.lastSync||Date.now()-state.lastSync>3600000);}
-function statusLabel(){if(storageError)return '저장소 오류';if(view.syncing)return '동기화 중';if(!connection.connected)return '이 기기에 저장';if(view.syncError)return '연결 대기 · '+lastSyncText();if(syncStale())return '동기화 지연 · '+lastSyncText();return '연결됨 · '+lastSyncText();}
+function statusLabel(){if(storageError)return '저장소 오류';if(view.syncing)return '동기화 중';if(!connection.connected)return '이 기기에 저장';if(view.syncError&&view.vpnOff)return '테일스케일 꺼짐 · 켜 주세요';if(view.syncError)return '연결 대기 · '+lastSyncText();if(syncStale())return '동기화 지연 · '+lastSyncText();return '연결됨 · '+lastSyncText();}
 function intro(title,sub,tag=''){return `<div class="intro"><div><h1>${title}</h1><p>${sub}</p></div>${tag?`<span class="pill">${tag}</span>`:''}</div>`;}
 function empty(title,sub,i='check',large=false){return `<div class="empty ${large?'large':''}">${icon(i)}<strong>${title}</strong>${sub}</div>`;}
 function meta(it){const a=[];if(it.project)a.push(`<span><i class="project-dot"></i>${esc(it.project)}</span>`);if(it.plannedDate||it.dueDate)a.push(`<span>${esc(it.plannedDate||it.dueDate)}${it.plannedDate?' 예정':''}</span>`);if(it.seriesId||it.recurrence)a.push(`<span class="tiny-tag">반복</span>`);if(it.children?.length)a.push(`<span>${it.children.filter(x=>x.done).length}/${it.children.length}</span>`);if(it.needsReview?.length)a.push('<span class="tiny-tag warn">확인 필요</span>');return a.join('');}
@@ -364,7 +364,7 @@ window.NativeEvent=async function(event){try{const e=typeof event==='string'?JSO
  if(e.type==='captureReady'){view.recording=false;view.processing=false;view.captureLive=false;clearInterval(voiceTimer);closeModal();consumeNativeCaptures();}
  if(e.type==='sync'){view.syncing=false;const raw=N.loadState();state=JSON.parse(raw);connection=JSON.parse(N.getConnection());status=JSON.parse(N.getStatus());
   // Background sync failures only change the status line; a toast is for a sync the owner started.
-  view.syncError=e.error||null;render();if(e.error&&view.userSync)toast(e.error);view.userSync=false;}
+  view.syncError=e.error||null;view.vpnOff=!!(e.error&&e.vpnOff);render();if(e.error&&view.userSync)toast(e.error);view.userSync=false;}
  if(e.type==='pairOffer'){connectDialog();el('#server-url').value=e.url;el('#pair-code').value=e.code;if(e.name)el('#device-name').value=e.name;}
  if(e.type==='sharedText'){submitText(e.text);}
  if(e.type==='pair'){if(e.error)toast(e.error);else{if(C.adoptOwnerProjects(state,e.projects))save();connection=JSON.parse(N.getConnection());closeModal();render();sync();}}

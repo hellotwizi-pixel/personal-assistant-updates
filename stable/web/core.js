@@ -4,7 +4,7 @@
   else root.AssistantCore = factory();
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
-  const VERSION = '0.4.2';
+  const VERSION = '0.4.3';
   const PROJECTS = ['개인일정', '취미', 'DMmate', '하하팩토리', '캐나다 골프사업', '디토크', '바베큐국립공원', 'AI Office'];
   // Owner-editable folders (2026-10-14). Until the first edit the eight defaults apply unchanged.
   const PROJECT_ICONS = ['calendar','book','spark','folder','report','home','archive','bell','image','clock'];

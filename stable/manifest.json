@@ -1,14 +1,14 @@
 {
  "apk": {
-  "sha256": "13fe629aeeccb0da95b30e59fc1eaf5a1a9a568097620135633bc3af64c2b2f7",
-  "url": "https://github.com/hellotwizi-pixel/personal-assistant-updates/releases/download/v0.4.2/personal-assistant-0.4.2.apk",
-  "versionCode": 15,
-  "versionName": "0.4.2"
+  "sha256": "518af6183896a109f830b7e9b0471359a9f8575e34e93ddba1fd9262ef7b8da4",
+  "url": "https://github.com/hellotwizi-pixel/personal-assistant-updates/releases/download/v0.4.3/personal-assistant-0.4.3.apk",
+  "versionCode": 16,
+  "versionName": "0.4.3"
  },
  "files": {
-  "app.js": "22667b676a56a63d3e5a3427de53386ac9cb5516f0bd927e1c5ad6bfd63759c0",
+  "app.js": "50c7f298c20e493e5344bdd4be0a7a3a3b345c636f0fb96191be9fcbdc71bea5",
   "backup.js": "7ae8683f4eb01fec7db2b036208c06d85e135a2cf76c28a8c78d933d8381c996",
-  "core.js": "5865e21ee5b2d6529ea2f97c40adca85662368071e5b00c31a096bbdc1f24df4",
+  "core.js": "b970160eb945353f0b71505bce8726a0ebb55443085125b6ad5f16231e41fd58",
   "fonts/IBMPlexSansKR-Bold.ttf": "9d82a8be5330f6d7b53121262867b402baca672eb69b852928f06d185d357f7d",
   "fonts/IBMPlexSansKR-Regular.ttf": "53750379270312368cf7641901f43a98dd892e3d9d5798cf25cdc245c85c71c0",
   "fonts/IBMPlexSansKR-SemiBold.ttf": "823c1956adf56c27c06b062725dfce23f266e4fd1366290f2957c8407482a817",
@@ -20,6 +20,6 @@
  },
  "minShell": 1,
  "package": "local.personal.assistantb",
- "publishedAt": 1792372104,
- "webVersion": 1792372092
+ "publishedAt": 1792372585,
+ "webVersion": 1792372576
 }
