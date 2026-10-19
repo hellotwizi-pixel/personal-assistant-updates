@@ -236,3 +236,6 @@ body{background:radial-gradient(ellipse at 0% 0%,rgba(147,169,244,.65),transpare
 .project-card .project-arrow{display:none}
 .project-card.editing{gap:6px}
 .project-card.editing .project-name{font-size:12px;padding:6px 8px;width:100%}
+.search-listen-actions{justify-content:center;gap:10px;margin-top:6px}
+.search-listen-actions .outline-btn{display:inline-flex;align-items:center;gap:6px}
+.search-listen-actions svg{width:16px;height:16px}

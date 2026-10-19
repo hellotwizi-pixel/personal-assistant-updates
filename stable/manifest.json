@@ -6,7 +6,7 @@
   "versionName": "0.5.0"
  },
  "files": {
-  "app.js": "198bf7a78346e2c1901cc195541670b64c2f9cdf39242131b52172ec85b7fdec",
+  "app.js": "f6349b2b05712bd6e42b8f5480897056dfb6c496e4b25327f4df1bf0b0d14aa3",
   "backup.js": "7ae8683f4eb01fec7db2b036208c06d85e135a2cf76c28a8c78d933d8381c996",
   "core.js": "f9a4bc848beb6ffefad4ff1dce833533ad91e5355632363546e69509e3f11891",
   "fonts/IBMPlexSansKR-Bold.ttf": "9d82a8be5330f6d7b53121262867b402baca672eb69b852928f06d185d357f7d",
@@ -16,10 +16,10 @@
   "index.html": "2be6d5c88de6f5c440c4791b68d6ae1c9009e10b58a0e5ab658422c6d3df770e",
   "manifest.webmanifest": "5198ab475c67347a5d0b96f5eacad82f43abacdfc2613f1d0f3ea345af9ecbdd",
   "orb.js": "3f01f0b9130f9fa712229754eeb0b72351e60f5047d407b6394c26495656eed4",
-  "style.css": "861d441402176a363fe2f5be7aa5d66a79be5e519f6b283483f152410c0b3f71"
+  "style.css": "f9a6ac4f1c20ae7c10d31d9a069194d2f6fecb6523baab05897be7038bd24f72"
  },
  "minShell": 1,
  "package": "local.personal.assistantb",
- "publishedAt": 1792390472,
- "webVersion": 1792390470
+ "publishedAt": 1792391559,
+ "webVersion": 1792391557
 }
