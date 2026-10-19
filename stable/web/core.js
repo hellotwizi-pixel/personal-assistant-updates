@@ -106,19 +106,32 @@
     }
     return r.freq?r:null;
   }
+  // Spoken forms the recognizer actually writes (spacing, Hangul spellings of English names).
   const aliases = {
-    '개인일정':['개인일정','개인 일정','가족','예비군'], '취미':['취미','발레','영화','음악','책','독서','공연'],
-    'DMmate':['dmmate','dm mate','디엠메이트','디엠 메이트'], '하하팩토리':['하하팩토리','하하 팩토리'],
-    '캐나다 골프사업':['캐나다 골프','에이스골프','에이스 골프','올댓골프','올댓 골프','펨브룩','ace golf'],
-    '디토크':['디토크','d.talk','d talk'], '바베큐국립공원':['바베큐국립공원','바베큐 국립공원'],
-    'AI Office':['ai office','ai오피스','ai 오피스','에이아이 오피스']
+    '개인일정':['개인일정','개인 일정','가족','예비군','병원','치과','진료','검진','약속','생일','기념일','결혼식','장례식','미용실','은행','장보기','이삿짐','엄마','아빠','부모님','남편','아내','어린이집','학교','운동','헬스','필라테스','스트레칭','요가','산책','청소','빨래','택배','관리비','보험'],
+    '취미':['취미','발레','영화','음악','책','독서','공연','전시','뮤지컬','콘서트','넷플릭스','드라마','그림','피아노','캠핑','여행'],
+    '업무':['업무','회의','미팅','보고서','거래처','고객','출장','결재','견적','계약','제안서','발표'],
+    'DMmate':['dmmate','dm mate','dm메이트','디엠메이트','디엠 메이트','디엠','메이트'], '하하팩토리':['하하팩토리','하하 팩토리','하하공장'],
+    '캐나다 골프사업':['캐나다 골프','캐나다','골프','에이스골프','에이스 골프','올댓골프','올댓 골프','펨브룩','팸브룩','ace golf'],
+    '디토크':['디토크','d.talk','d talk','dtalk','디 토크','인스타'], '바베큐국립공원':['바베큐국립공원','바베큐 국립공원','바비큐','바베큐','비비큐','국립공원'],
+    'AI Office':['ai office','ai오피스','ai 오피스','에이아이 오피스','에이아이오피스','오피스','미미르']
   };
-  function classify(text,names=PROJECTS) {
-    const low=text.toLowerCase(), explicit=names.filter(p=>low.includes(p.toLowerCase()));
+  const flat=s=>String(s||'').toLowerCase().replace(/[\s.\-_·'"]/g,'');
+  const PARTICLE=/(?:에서|으로|까지|부터|에게|한테|하고|이랑|이나|처럼|은|는|이|가|을|를|에|로|과|와|도|만|의|랑)$/;
+  const STOP=new Set(['오늘','내일','모레','이번','다음','주','오전','오후','저녁','아침','점심','밤','시','분','반','하기','해줘','하자','할','일','것','거','좀','꼭','다시','확인','정리','준비','관련','등록','추가','기록','메모','알려줘','보내기','진행','처리','생각','이거','그거','저거','우리','내','제']);
+  /** Words a person would recognise as the subject of a record, without particles or date words. */
+  function topicWords(text){const out=[];(String(text||'').toLowerCase().match(/[a-z0-9]+|[가-힣]+/g)||[]).forEach(w=>{const b=w.length>2&&PARTICLE.test(w)?w.replace(PARTICLE,''):w;if(b.length>=2&&!STOP.has(b)&&!/^\d+$/.test(b)&&!/^\d/.test(b)&&!out.includes(b))out.push(b);});return out.slice(0,12);}
+  /** hints: {folder name: {keywords:[], learned:{word:count}}} from projectHints(state). */
+  function classify(text,names=PROJECTS,hints={}) {
+    const t=flat(text), explicit=names.filter(p=>t.includes(flat(p)));
     if(explicit.length===1)return explicit[0];
-    if(explicit.length>1)return null;
-    const hits=names.filter(p=>(aliases[p]||[]).some(a=>low.includes(a.toLowerCase())));
-    return hits.length===1?hits[0]:null;
+    if(explicit.length>1){const longest=explicit.sort((a,b)=>flat(b).length-flat(a).length);return explicit.some(p=>p!==longest[0]&&!flat(longest[0]).includes(flat(p)))?null:longest[0];}
+    const score={},raw=String(text||'').toLowerCase().match(/[a-z0-9]+|[가-힣]+/g)||[];names.forEach(p=>score[p]=0);
+    names.forEach(p=>{const own=(hints[p]&&hints[p].keywords)||[];const hit=[...own.filter(a=>flat(a).length>=2),...(aliases[p]||[])].filter(a=>flat(a).length>1?t.includes(flat(a)):raw.some(w=>w===a||w.replace(PARTICLE,'')===a));if(hit.length)score[p]+=3+Math.max(...hit.map(a=>flat(a).length))/100+(own.some(a=>hit.includes(a))?1:0);});
+    const words=topicWords(text);
+    words.forEach(w=>{const per=names.map(p=>((hints[p]||{}).learned||{})[w]||0),total=per.reduce((a,b)=>a+b,0);if(total)names.forEach((p,i)=>{score[p]+=2*per[i]/total;});});
+    const ranked=names.slice().sort((a,b)=>score[b]-score[a]);
+    return score[ranked[0]]>=2&&score[ranked[0]]-(score[ranked[1]]||0)>=1?ranked[0]:null;
   }
   function titleOf(text,names=PROJECTS) {
     let s=text.split(/하위\s*(?:항목|체크(?:리스트)?)\s*(?:은|는|:)/)[0].replace(/[,，\s]+$/,'');
@@ -135,8 +148,8 @@
     return s||text.trim().slice(0,160);
   }
   function hobbyType(t){return /책|독서/.test(t)?'책':/영화/.test(t)?'영화':/음악|노래|앨범/.test(t)?'음악':'기타';}
-  function parseCreate(text, ms, zone, id, names=PROJECTS) {
-    const dt=dateParse(text,ms,zone), recurrence=recurrenceParse(text), project=classify(text,names);
+  function parseCreate(text, ms, zone, id, names=PROJECTS, hints={}) {
+    const dt=dateParse(text,ms,zone), recurrence=recurrenceParse(text), project=classify(text,names,hints);
     const reference=/예비군|휴가|출장|부재/.test(text) && /(?:[가-힣]{2,5}(?:이|씨|님|의)|직원|정민)/.test(text) && !/내\s*(?:휴가|출장|예비군)/.test(text);
     let type=reference?'reference':dt.time?'event':/(?:책|영화|음악|노래|앨범|링크|https?:\/\/)/.test(text)&&!dt.date&&!recurrence?'note':'task';
     if(/메모|기록만|추천받|추천함/.test(text)&&!dt.time&&!recurrence) type='note';
@@ -167,6 +180,19 @@
     return saved.filter(p=>!p.deleted).sort((a,b)=>(a.order??0)-(b.order??0));
   }
   function projectNames(state){return projectList(state).map(p=>p.name);}
+  function projectHints(state){const h={};projectList(state).forEach(p=>{h[p.name]={keywords:Array.isArray(p.keywords)?p.keywords:[],learned:p.learned&&typeof p.learned==='object'?p.learned:{}};});return h;}
+  /** Filing a record by hand teaches its folder the record's words, so the next similar record files itself. */
+  function learnProject(state,item,name,ms=Date.now()){
+    const words=topicWords(item.title||item.body||'').filter(w=>!flat(name).includes(flat(w)));if(!words.length)return;
+    ensureProjects(state,ms);
+    Object.values(state.projects).filter(p=>!p.deleted).forEach(p=>{const old=p.learned||{},next={...old};let changed=false;
+      words.forEach(w=>{if(p.name===name){next[w]=Math.min(20,(next[w]||0)+1);changed=true;}else if(next[w]){next[w]-=1;if(next[w]<=0)delete next[w];changed=true;}});
+      if(!changed)return;const kept=Object.entries(next).sort((a,b)=>b[1]-a[1]).slice(0,200);write(state,'project',p.id,{learned:Object.fromEntries(kept),updatedAt:ms},ms);});
+  }
+  function setProjectKeywords(state,id,text,ms=Date.now()){ensureProjects(state,ms);const p=state.projects[id];if(!p||p.deleted)throw new Error('폴더를 찾지 못했어요.');
+    const list=[...new Set(String(text||'').split(/[,，\n]/).map(x=>x.replace(/\s+/g,' ').trim()).filter(x=>x.length>=2&&x.length<=30))].slice(0,50);
+    write(state,'project',id,{keywords:list,updatedAt:ms},ms);return list;}
+  function forgetLearned(state,id,ms=Date.now()){ensureProjects(state,ms);const p=state.projects[id];if(!p||p.deleted)throw new Error('폴더를 찾지 못했어요.');write(state,'project',id,{learned:{},updatedAt:ms},ms);}
   // The first edit turns the defaults into synced records so every device sees the same folders.
   function defaultProjects(state){const s=state.settings||{};
     if(Array.isArray(s.defaultProjects)&&s.defaultProjects.length)return {names:s.defaultProjects,prefix:'project:default-',icons:s.defaultProjects.map((_,i)=>DEFAULT_PROJECT_ICONS[i]||'folder')};
@@ -219,7 +245,7 @@
   }
   function createItem(state,text,ms=Date.now(),zone=state.settings.timezone,captureId=uuid()) {
     if(state.captures[captureId]) return {status:'duplicate',message:'이미 저장한 입력입니다.',ids:state.captures[captureId].itemIds||[]};
-    const it=parseCreate(text,ms,zone,captureId,projectNames(state));
+    const it=parseCreate(text,ms,zone,captureId,projectNames(state),projectHints(state));
     write(state,'capture',captureId,{id:captureId,text,createdAt:ms,timezone:zone,status:'stored',itemIds:[]},ms);
     if(it.recurrence && !it.recurrence.unresolved.length && !it.needsReview.some(x=>['date','time','meridiem'].includes(x))) {
       const sid='series:'+captureId, rule=clone(it.recurrence);it.recurrence=null;
@@ -242,6 +268,7 @@
   function updateItem(state,id,patch,ms=Date.now()) {
     const it=state.items[id];if(!it||it.deleted)throw new Error('기록을 찾지 못했습니다.');
     if(patch.project!==undefined&&patch.project!==null&&!projectNames(state).includes(patch.project))throw new Error('프로젝트를 확인해주세요.');
+    if(patch.project&&patch.project!==it.project)learnProject(state,{...it,...patch},patch.project,ms);
     if(patch.type&&!TYPES.includes(patch.type))throw new Error('기록 종류를 확인해주세요.');
     for(const k of ['dueDate','originalDueDate','plannedDate','date','endDate'])if(patch[k]&&!validDate(patch[k]))throw new Error('날짜를 확인해주세요.');
     if(patch.startAt!==undefined && patch.startAt!==it.startAt) {patch={...patch,startVersion:it.startVersion+1,final:patch.startAt?finalAlarm(patch.startAt,ms):null};}
@@ -359,7 +386,7 @@
       if(targets.length!==1)return pendingCommand(state,text,targets,ms,zone,captureId);
       if(dt.date){if(targets[0].type==='task')return postpone(state,[targets[0].id],dt.date,ms);
         const time=dt.time||targets[0].time;if(targets[0].type==='event'&&time){const start=localEpoch(dt.date,time.hour,time.minute,zone);updateItem(state,targets[0].id,{date:dt.date,endDate:dt.date,startAt:start,time},ms);return {status:'updated',message:'약속 시간과 최종 알림을 변경했어요.',ids:[targets[0].id]};}}
-      const project=classify(text,projectNames(state));if(project){updateItem(state,targets[0].id,{project,needsReview:targets[0].needsReview.filter(x=>x!=='project')},ms);return {status:'updated',message:`${project}로 옮겼어요.`,ids:[targets[0].id]};}
+      const project=classify(text,projectNames(state),projectHints(state));if(project){updateItem(state,targets[0].id,{project,needsReview:targets[0].needsReview.filter(x=>x!=='project')},ms);return {status:'updated',message:`${project}로 옮겼어요.`,ids:[targets[0].id]};}
       return pendingCommand(state,text,targets,ms,zone,captureId,'변경할 날짜나 분류를 확인해야 해요.');
     }
     // Destructive commands are never interpreted as fresh tasks or executed from loose text.
@@ -387,7 +414,8 @@
     const sent=new Set(sentIds),accepted=new Set((response.accepted||[]).map(x=>typeof x==='string'?x:x.opId));
     const rejected=new Set((response.conflicts||[]).map(x=>x.opId));
     state.ops=state.ops.filter(x=>!(sent.has(x.opId)&&(accepted.has(x.opId)||rejected.has(x.opId))));
-    for(const c of response.conflicts||[]) if(!state.conflicts.some(x=>x.opId===c.opId))state.conflicts.push(c);
+    // Learned folder words are a hint, not the owner's data: another device's copy simply wins.
+    for(const c of response.conflicts||[]) if(!(Array.isArray(c.fields)&&c.fields.length&&c.fields.every(f=>f==='learned'))&&!state.conflicts.some(x=>x.opId===c.opId))state.conflicts.push(c);
     const dirty=new Set(state.ops.map(x=>x.entity+':'+x.id));
     for(const change of response.changes||[]) {
       const bucket=containerFor(state,change.entity),value=change.value;
@@ -408,5 +436,5 @@
       for(const [id,v] of Object.entries(other[bucket]||{})){if(!state[bucket][id])write(state,entity,id,v,ms);else if(!same(state[bucket][id],v))state.conflicts.push({opId:uuid(),operation:{entity,id,patch:v},current:clone(state[bucket][id]),fields:['backup'],reason:'백업과 현재 기록이 다릅니다.'});}
     }return state;
   }
-  return {VERSION,PROJECTS,STARTER_PROJECTS,adoptOwnerProjects,PROJECT_ICONS,projectList,projectNames,ensureProjects,addProject,renameProject,setProjectIcon,deleteProject,TYPES,DAY,MINUTE,uuid,clone,same,zoneParts,validDate,addDays,weekday,monthDays,localEpoch,finalAlarm,dateParse,recurrenceParse,classify,parseCreate,titleOf,emptyState,write,createItem,execute,query,updateItem,complete,toggleChild,addChildren,postpone,ensureRecurrences,resolveRecurrence,changeSeries,activeItems,todayView,noonItems,schedulePlan,dailyNotice,acknowledge,notificationId,formatTime,applySync,resolveConflict,mergeBackup,matchItems};
+  return {VERSION,PROJECTS,STARTER_PROJECTS,adoptOwnerProjects,PROJECT_ICONS,projectList,projectNames,projectHints,learnProject,setProjectKeywords,forgetLearned,topicWords,ensureProjects,addProject,renameProject,setProjectIcon,deleteProject,TYPES,DAY,MINUTE,uuid,clone,same,zoneParts,validDate,addDays,weekday,monthDays,localEpoch,finalAlarm,dateParse,recurrenceParse,classify,parseCreate,titleOf,emptyState,write,createItem,execute,query,updateItem,complete,toggleChild,addChildren,postpone,ensureRecurrences,resolveRecurrence,changeSeries,activeItems,todayView,noonItems,schedulePlan,dailyNotice,acknowledge,notificationId,formatTime,applySync,resolveConflict,mergeBackup,matchItems};
 });
