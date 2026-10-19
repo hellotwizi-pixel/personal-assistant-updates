@@ -8,7 +8,7 @@
  "files": {
   "app.js": "22667b676a56a63d3e5a3427de53386ac9cb5516f0bd927e1c5ad6bfd63759c0",
   "backup.js": "7ae8683f4eb01fec7db2b036208c06d85e135a2cf76c28a8c78d933d8381c996",
-  "core.js": "ac62cc5e776b66b11125fe3e30b499ef871e8c694cc9b993515a57eb3be26cb3",
+  "core.js": "252845424126c37e87c41ec259a72d67a573830eee6c6418ba4d35c7b8105058",
   "fonts/IBMPlexSansKR-Bold.ttf": "9d82a8be5330f6d7b53121262867b402baca672eb69b852928f06d185d357f7d",
   "fonts/IBMPlexSansKR-Regular.ttf": "53750379270312368cf7641901f43a98dd892e3d9d5798cf25cdc245c85c71c0",
   "fonts/IBMPlexSansKR-SemiBold.ttf": "823c1956adf56c27c06b062725dfce23f266e4fd1366290f2957c8407482a817",
@@ -20,6 +20,6 @@
  },
  "minShell": 1,
  "package": "local.personal.assistantb",
- "publishedAt": 1792371578,
- "webVersion": 1792371575
+ "publishedAt": 1792371876,
+ "webVersion": 1792371874
 }
